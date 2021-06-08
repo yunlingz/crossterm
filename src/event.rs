@@ -305,6 +305,7 @@ pub enum Event {
     /// An resize event with new dimensions after resize (columns, rows).
     /// **Note** that resize events can be occur in batches.
     Resize(u16, u16),
+    SIGINT,
 }
 
 /// Represents a mouse event.

@@ -52,7 +52,7 @@ impl UnixInternalEventSource {
         let mut tty_ev = SourceFd(&tty_raw_fd);
         registry.register(&mut tty_ev, TTY_TOKEN, Interest::READABLE)?;
 
-        let mut signals = Signals::new(&[signal_hook::consts::SIGWINCH])?;
+        let mut signals = Signals::new(&[signal_hook::consts::SIGWINCH, signal_hook::consts::SIGINT])?;
         registry.register(&mut signals, SIGNAL_TOKEN, Interest::READABLE)?;
 
         #[cfg(feature = "event-stream")]
@@ -141,6 +141,9 @@ impl EventSource for UnixInternalEventSource {
                                     return Ok(Some(InternalEvent::Event(Event::Resize(
                                         new_size.0, new_size.1,
                                     ))));
+                                }
+                                signal_hook::consts::SIGINT => {
+                                    return Ok(Some(InternalEvent::Event(Event::SIGINT)));
                                 }
                                 _ => unreachable!("Synchronize signal registration & handling"),
                             };
